@@ -5,7 +5,7 @@ from thebot.modules import ALL_MODULES
 import importlib
 
 for module in ALL_MODULES:
-    imported_module = importlib.import_module("thebot.modules." + module)
+    imported_module = importlib.import_module(f"thebot.modules.{module}")
     importlib.reload(imported_module)
 
 

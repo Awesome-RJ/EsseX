@@ -41,13 +41,20 @@ async def help(_, message):
         ]
     ]
     if message.chat.type == "private":
-       await message.reply_text(
-        'Available cmds for now :\n /animeinfo - search anime on AniList\n /mangainfo - search manga on Anilist\n /charinfo - search character on Anilist\n /airinfo - check airing status of an anime\n /wa by replying to a media - find what anime a media is from\n /nhentai ID - returns the nhentai in telegraph instant preview format.',
-        reply_markup=InlineKeyboardMarkup(buttons)
-        )
+        await message.reply_text(
+         'Available cmds for now :\n /animeinfo - search anime on AniList\n /mangainfo - search manga on Anilist\n /charinfo - search character on Anilist\n /airinfo - check airing status of an anime\n /wa by replying to a media - find what anime a media is from\n /nhentai ID - returns the nhentai in telegraph instant preview format.',
+         reply_markup=InlineKeyboardMarkup(buttons)
+         )
     else:
         buttons = InlineKeyboardMarkup(
-            [[InlineKeyboardButton(text="Help",
-                url=f"t.me/TheEsseXBot?start=help")]])
+            [
+                [
+                    InlineKeyboardButton(
+                        text="Help", url="t.me/TheEsseXBot?start=help"
+                    )
+                ]
+            ]
+        )
+
         await message.reply("Click the button below.",
                             reply_markup=buttons)

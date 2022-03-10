@@ -28,34 +28,56 @@ from thebot.utils.errors import capture_err
 async def inline_query_handler(client, query):
     string = query.query.lower()
     if string == "":
-        await client.answer_inline_query(query.id,
+        await client.answer_inline_query(
+            query.id,
             results=[
                 InlineQueryResultPhoto(
                     caption="Heyya, Try me in Inline by Pressing these buttons below",
                     photo_url="https://telegra.ph/file/ed938a282abcd7a87a033.jpg",
                     parse_mode="markdown",
-                    title=f"Need Help?",
-                    description=f"Click Here..",
+                    title="Need Help?",
+                    description="Click Here..",
                     reply_markup=InlineKeyboardMarkup(
-                        [[
-                        InlineKeyboardButton("Anime", switch_inline_query_current_chat="anime "),
-                        InlineKeyboardButton("Manga", switch_inline_query_current_chat="manga "),
-                        InlineKeyboardButton("nHentai", switch_inline_query_current_chat="nhentai ")
-                        ],
                         [
-                        InlineKeyboardButton("Airing", switch_inline_query_current_chat="airing "),
-                        InlineKeyboardButton("Character", switch_inline_query_current_chat="char ")
-                        ],
-                        [
-                        InlineKeyboardButton(text="Help", url="https://t.me/TheEsseXBot?start=help")
-                        ]]
-                    )
-                ),
+                            [
+                                InlineKeyboardButton(
+                                    "Anime",
+                                    switch_inline_query_current_chat="anime ",
+                                ),
+                                InlineKeyboardButton(
+                                    "Manga",
+                                    switch_inline_query_current_chat="manga ",
+                                ),
+                                InlineKeyboardButton(
+                                    "nHentai",
+                                    switch_inline_query_current_chat="nhentai ",
+                                ),
+                            ],
+                            [
+                                InlineKeyboardButton(
+                                    "Airing",
+                                    switch_inline_query_current_chat="airing ",
+                                ),
+                                InlineKeyboardButton(
+                                    "Character",
+                                    switch_inline_query_current_chat="char ",
+                                ),
+                            ],
+                            [
+                                InlineKeyboardButton(
+                                    text="Help",
+                                    url="https://t.me/TheEsseXBot?start=help",
+                                )
+                            ],
+                        ]
+                    ),
+                )
             ],
             switch_pm_text="Click here to Switch to PM",
             switch_pm_parameter="start",
-            cache_time=300
+            cache_time=300,
         )
+
 
     answers = []
     if string.split()[0] == "nhentai":
@@ -104,8 +126,7 @@ async def inline_query_handler(client, query):
         async with aiohttp.ClientSession() as session:
             async with session.post(url, json={'query': anime_query, 'variables': variables}) as resp:
                 r = await resp.json()
-                json = r['data'].get('Media', None)
-                if json:
+                if json := r['data'].get('Media', None):
                     mal_id = int(json.get('idMal'))
                     msg = f"**{json['title']['romaji']}** (`{json['title']['native']}`)\n**Type**: {json['format']}\n**Status**: {json['status']}\n**Episodes**: {json.get('episodes', 'N/A')}\n**Duration**: {json.get('duration', 'N/A')} Per Ep.\n**Score**: {json['averageScore']}\n**Genres**: `"
                     for x in json['genres']: 
@@ -113,7 +134,7 @@ async def inline_query_handler(client, query):
                     msg = msg[:-2] + '`\n'
                     msg += "**Studios**: `"
                     for x in json['studios']['nodes']:
-                        msg += f"{x['name']}, " 
+                        msg += f"{x['name']}, "
                     msg = msg[:-2] + '`\n'
                     info = json.get('siteUrl')
                     mal_link = f"https://myanimelist.net/anime/{mal_id}"
@@ -162,8 +183,7 @@ async def inline_query_handler(client, query):
         async with aiohttp.ClientSession() as session:
             async with session.post(url, json={'query': manga_query, 'variables': variables}) as resp:
                 r = await resp.json()
-                json = r['data'].get('Media', None)
-                if json:
+                if json := r['data'].get('Media', None):
                     msg = f"**{json['title']['romaji']}** (`{json['title']['native']}`)\n**Status**: {json['status']}\n**Year**: {json['startDate']['year']}\n**Score**: {json['averageScore']}\n**Genres**: `"
                     for x in json['genres']: 
                         msg += f"{x}, "
@@ -175,8 +195,7 @@ async def inline_query_handler(client, query):
                     else:
                         buttons = None
                     msg += shorten(description, info)
-                    banner_url = json.get('bannerImage')
-                    if banner_url:
+                    if banner_url := json.get('bannerImage'):
                         answers.append(InlineQueryResultPhoto(
                             caption=msg,
                             photo_url=banner_url,
@@ -244,14 +263,14 @@ async def inline_query_handler(client, query):
             return
         search = string.split(None, 1)[1]
         variables = {'query': search}
-        json = requests.post(url, json={'query': character_query, 'variables': variables}).json()['data']['Character']
-        if json:
+        if json := requests.post(
+            url, json={'query': character_query, 'variables': variables}
+        ).json()['data']['Character']:
             ms_g = f"**{json.get('name').get('full')}**(`{json.get('name').get('native')}`)\n❤️ Favourites : {json['favourites']}\n"
             description = f"{json['description']}"
             site_url = json.get('siteUrl')
             ms_g += shorten(description, site_url)
-            image = json.get('image', None)
-            if image:
+            if image := json.get('image', None):
                 image = image.get('large')
                 answers.append(InlineQueryResultPhoto(
                     caption=ms_g,
